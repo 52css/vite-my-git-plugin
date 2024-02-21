@@ -74,6 +74,7 @@ export default function myGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
       return {
         // 全局变量，可以在整个应用中使用
         define: {
+          __API__: JSON.stringify(API),
           [injectKey]: JSON.stringify({
             API,
             COMMIT_ID: commitId,
