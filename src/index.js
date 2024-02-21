@@ -1,3 +1,5 @@
+import { execSync } from 'child_process'
+
 export default function myGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const apiIndex = process.argv.findIndex((x) => x === "--api");
   let API = "";
