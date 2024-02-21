@@ -5,7 +5,7 @@
 在`vite.config.js` 增加
 
 ```js
-import MyGitPlugin from '@52css/my-git-plugin';
+import { MyGitPlugin } from '@52css/my-git-plugin';
 
 export default defineConfig({
   plugins: [vue(), MyGitPlugin()],

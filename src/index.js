@@ -2,7 +2,7 @@ const ChildProcess = require('child_process');
 
 const execSync = ChildProcess.execSync;
 
-function myGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
+function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const apiIndex = process.argv.findIndex((x) => x === "--api");
   let API = "";
 
@@ -107,4 +107,6 @@ function myGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   };
 }
 
-exports.default = myGitPlugin;
+module.exports = {
+  MyGitPlugin
+};
