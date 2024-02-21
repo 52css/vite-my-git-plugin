@@ -1,4 +1,6 @@
-import { execSync } from "child_process";
+const ChildProcess = require('child_process');
+
+const execSync = ChildProcess.execSync;
 
 function myGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const apiIndex = process.argv.findIndex((x) => x === "--api");
