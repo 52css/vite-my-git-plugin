@@ -107,4 +107,4 @@ function myGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   };
 }
 
-export { myGitPlugin as default };
+exports.default = myGitPlugin;
