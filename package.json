@@ -1,5 +1,5 @@
 {
-  "name": "vite-my-git-plugin",
+  "name": "@52css/vite-my-git-plugin",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
