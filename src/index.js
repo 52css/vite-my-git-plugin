@@ -71,7 +71,7 @@ try {
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   return {
     name: "my-git-plugin",
-    apply: 'build', // 在构建时使用
+    // apply: 'build', // 在构建时使用
     config() {
       return {
         // 全局变量，可以在整个应用中使用
