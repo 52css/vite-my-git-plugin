@@ -89,6 +89,18 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
         },
       };
     },
+    transformIndexHtml() {
+      const HtmlStr = `window.${injectKey} = ${injectKey}`;
+      // 将htmlStr插到body里
+      return [
+        {
+          tag: "script",
+          attrs: { defer: true },
+          children: HtmlStr,
+          injectTo: "body",
+        },
+      ];
+    },
     // async transformIndexHtml() {
     //   const res = await execAsync('git log -1 --format=%cI')
     //   const HtmlStr = `const gitInfo = ${JSON.stringify(res)}`
