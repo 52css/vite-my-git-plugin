@@ -69,6 +69,15 @@ try {
 }
 
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
+  const gitInfo = JSON.stringify({
+    API,
+    COMMIT_ID: commitId,
+    CURRENT_BRANCH: currentBranch,
+    COMMIT_DETAIL: commitDetail
+      .split("\n")
+      .map((x) => JSON.stringify(x)),
+    BUILD_TIME: buildTime,
+  })
   return {
     name: "my-git-plugin",
     // apply: 'build', // 在构建时使用
@@ -77,20 +86,12 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
         // 全局变量，可以在整个应用中使用
         define: {
           __API__: JSON.stringify(API),
-          [injectKey]: JSON.stringify({
-            API,
-            COMMIT_ID: commitId,
-            CURRENT_BRANCH: currentBranch,
-            COMMIT_DETAIL: commitDetail
-              .split("\n")
-              .map((x) => JSON.stringify(x)),
-            BUILD_TIME: buildTime,
-          }),
+          [injectKey]: gitInfo,
         },
       };
     },
     transformIndexHtml() {
-      const HtmlStr = `window.${injectKey} = ${injectKey}`;
+      const HtmlStr = `window.${injectKey} = ${gitInfo}`;
       // 将htmlStr插到body里
       return [
         {
@@ -101,19 +102,6 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
         },
       ];
     },
-    // async transformIndexHtml() {
-    //   const res = await execAsync('git log -1 --format=%cI')
-    //   const HtmlStr = `const gitInfo = ${JSON.stringify(res)}`
-    //   // 将htmlStr插到body里
-    //   return [
-    //     {
-    //       tag: 'script',
-    //       attrs: { defer: true },
-    //       children: HtmlStr,
-    //       injectTo: 'body',
-    //     },
-    //   ]
-    // },
   };
 }
 
