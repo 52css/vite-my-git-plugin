@@ -10,6 +10,16 @@ if (apiIndex >= 0) {
   process.env.API = API;
 }
 
+
+const wsIndex = process.argv.findIndex((x) => x === "--ws");
+let WS = "";
+
+if (wsIndex >= 0) {
+  WS = process.argv[wsIndex + 1];
+  process.env.WS = WS;
+}
+
+
 const COMMIT_ID = "git rev-parse HEAD";
 const CURRENT_BRANCH = "git name-rev --name-only HEAD";
 // 1. git symbolic-ref --short -q HEAD
@@ -71,6 +81,7 @@ try {
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const gitInfo = JSON.stringify({
     API,
+    WS,
     COMMIT_ID: commitId,
     CURRENT_BRANCH: currentBranch,
     COMMIT_DETAIL: commitDetail
@@ -86,6 +97,7 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
         // 全局变量，可以在整个应用中使用
         define: {
           __API__: JSON.stringify(API),
+          __WS__: JSON.stringify(WS),
           [injectKey]: gitInfo,
         },
       };
