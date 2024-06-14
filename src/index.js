@@ -28,26 +28,27 @@ const COMMIT_DETAIL = 'git log --pretty=format:"%h - %an, %ar : %s"  -5';
 let commitId = "";
 let currentBranch = "";
 let commitDetail = "";
+const now = getCurrentTimeWithOffset()
 const month =
-  new Date().getMonth() + 1 < 10
-    ? "0" + (new Date().getMonth() + 1)
-    : new Date().getMonth() + 1;
+  now.getMonth() + 1 < 10
+    ? "0" + (now.getMonth() + 1)
+    : now.getMonth() + 1;
 const day =
-  new Date().getDate() < 10 ? "0" + new Date().getDate() : new Date().getDate();
+  now.getDate() < 10 ? "0" + now.getDate() : now.getDate();
 const ss =
-  new Date().getSeconds() < 10
-    ? "0" + new Date().getSeconds()
-    : new Date().getSeconds();
+  now.getSeconds() < 10
+    ? "0" + now.getSeconds()
+    : now.getSeconds();
 const mm =
-  new Date().getMinutes() < 10
-    ? "0" + new Date().getMinutes()
-    : new Date().getMinutes();
+  now.getMinutes() < 10
+    ? "0" + now.getMinutes()
+    : now.getMinutes();
 const hh =
-  new Date().getHours() < 10
-    ? "0" + new Date().getHours()
-    : new Date().getHours();
+  now.getHours() < 10
+    ? "0" + now.getHours()
+    : now.getHours();
 const buildTime =
-  new Date().getFullYear() +
+  now.getFullYear() +
   "-" +
   month +
   "-" +
@@ -62,22 +63,38 @@ const buildTime =
 try {
   commitId = execSync(COMMIT_ID).toString().trim();
 } catch (ex) {
-  commitId = process?.env?.COMMIT_ID;
-  // console.log(ex);
+  // commitId = process.env.COMMIT_ID;
+  console.log(ex);
 }
 
 try {
   commitDetail = execSync(COMMIT_DETAIL).toString().trim();
 } catch (ex) {
-  commitDetail = process?.env?.COMMIT_DETAIL;
-  // console.log(ex);
+  // commitDetail = process.env.COMMIT_DETAIL;
+  console.log(ex);
 }
 try {
   currentBranch = execSync(CURRENT_BRANCH).toString().trim();
 } catch (ex) {
-  currentBranch = process?.env?.CURRENT_BRANCH;
-  // console.log(ex);
+  // currentBranch = process.env.CURRENT_BRANCH;
+  console.log(ex);
 }
+
+function getCurrentTimeWithOffset() {
+  const currentDate = new Date();
+
+  // 获取当前时区名称
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // 判断当前时区是否为 UTC
+  if (timeZone === 'UTC' || timeZone === 'Etc/UTC') {
+    // 当前时区为 UTC，需要添加 8 小时的时差
+    currentDate.setHours(currentDate.getHours() + 8);
+  }
+
+  return currentDate;
+}
+
 
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const gitInfo = JSON.stringify({
