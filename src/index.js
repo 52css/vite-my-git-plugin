@@ -1,13 +1,17 @@
 const ChildProcess = require("child_process");
-
 const execSync = ChildProcess.execSync;
+const getArg = (str) => {
+  const index = process.argv.findIndex((x) => x === `--${str}`);
 
-const apiIndex = process.argv.findIndex((x) => x === "--api");
-let API = "";
+  if (index >=0) {
+    return process.argv[index + 1]
+  }
+}
 
-if (apiIndex >= 0) {
-  API = process.argv[apiIndex + 1];
-  process.env.API = API;
+let api = getArg('api');
+
+if (api) {
+  process.env.API = api;
 }
 
 // const wsIndex = process.argv.findIndex((x) => x === "--ws");
@@ -63,21 +67,21 @@ const buildTime =
 try {
   commitId = execSync(COMMIT_ID).toString().trim();
 } catch (ex) {
-  // commitId = process.env.COMMIT_ID;
-  console.log(ex);
+  commitId = getArg('commitId')
+  // console.log(ex);
 }
 
 try {
   commitDetail = execSync(COMMIT_DETAIL).toString().trim();
 } catch (ex) {
-  // commitDetail = process.env.COMMIT_DETAIL;
-  console.log(ex);
+  commitDetail = getArg('commitDetail')
+  // console.log(ex);
 }
 try {
   currentBranch = execSync(CURRENT_BRANCH).toString().trim();
 } catch (ex) {
-  // currentBranch = process.env.CURRENT_BRANCH;
-  console.log(ex);
+  currentBranch = getArg('currentBranch')
+  // console.log(ex);
 }
 
 function getCurrentTimeWithOffset() {
@@ -98,7 +102,7 @@ function getCurrentTimeWithOffset() {
 
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const gitInfo = JSON.stringify({
-    API,
+    API: api,
     COMMIT_ID: commitId,
     CURRENT_BRANCH: currentBranch,
     COMMIT_DETAIL: commitDetail.split("\n").map((x) => JSON.stringify(x)),
