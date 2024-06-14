@@ -10,15 +10,13 @@ if (apiIndex >= 0) {
   process.env.API = API;
 }
 
+// const wsIndex = process.argv.findIndex((x) => x === "--ws");
+// let WS = "";
 
-const wsIndex = process.argv.findIndex((x) => x === "--ws");
-let WS = "";
-
-if (wsIndex >= 0) {
-  WS = process.argv[wsIndex + 1];
-  process.env.WS = WS;
-}
-
+// if (wsIndex >= 0) {
+//   WS = process.argv[wsIndex + 1];
+//   process.env.WS = WS;
+// }
 
 const COMMIT_ID = "git rev-parse HEAD";
 const CURRENT_BRANCH = "git name-rev --name-only HEAD";
@@ -64,18 +62,21 @@ const buildTime =
 try {
   commitId = execSync(COMMIT_ID).toString().trim();
 } catch (ex) {
-  console.log(ex);
+  commitId = process.env.COMMIT_ID;
+  // console.log(ex);
 }
 
 try {
   commitDetail = execSync(COMMIT_DETAIL).toString().trim();
 } catch (ex) {
-  console.log(ex);
+  commitDetail = process.env.COMMIT_DETAIL;
+  // console.log(ex);
 }
 try {
   currentBranch = execSync(CURRENT_BRANCH).toString().trim();
 } catch (ex) {
-  console.log(ex);
+  currentBranch = process.env.CURRENT_BRANCH;
+  // console.log(ex);
 }
 
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
@@ -84,11 +85,9 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
     WS,
     COMMIT_ID: commitId,
     CURRENT_BRANCH: currentBranch,
-    COMMIT_DETAIL: commitDetail
-      .split("\n")
-      .map((x) => JSON.stringify(x)),
+    COMMIT_DETAIL: commitDetail.split("\n").map((x) => JSON.stringify(x)),
     BUILD_TIME: buildTime,
-  })
+  });
   return {
     name: "my-git-plugin",
     // apply: 'build', // 在构建时使用
@@ -97,7 +96,7 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
         // 全局变量，可以在整个应用中使用
         define: {
           __API__: JSON.stringify(API),
-          __WS__: JSON.stringify(WS),
+          // __WS__: JSON.stringify(WS || API.replace('http', 'ws')),
           [injectKey]: gitInfo,
         },
       };
