@@ -29,9 +29,9 @@ const CURRENT_BRANCH = "git name-rev --name-only HEAD";
 // 3. git symbolic-ref HEAD | sed -e "s/^refs\/heads\///"
 const COMMIT_DETAIL = 'git log --pretty=format:"%h - %an, %ar : %s"  -5';
 
-let commitId = "";
-let currentBranch = "";
-let commitDetail = "";
+let commitId = getArg('commitId');
+let currentBranch = getArg('currentBranch');
+let commitDetail = getArg('commitDetail');
 const now = getCurrentTimeWithOffset()
 const month =
   now.getMonth() + 1 < 10
@@ -64,25 +64,34 @@ const buildTime =
   ":" +
   ss;
 
-try {
-  commitId = execSync(COMMIT_ID).toString().trim();
-} catch (ex) {
-  commitId = getArg('commitId')
-  // console.log(ex);
+if (!commitId) {
+  try {
+    commitId = execSync(COMMIT_ID).toString().trim();
+  } catch (ex) {
+    console.log(ex);
+  }
 }
 
-try {
-  commitDetail = execSync(COMMIT_DETAIL).toString().trim();
-} catch (ex) {
-  commitDetail = getArg('commitDetail')
-  // console.log(ex);
+if (!commitDetail) {
+  try {
+    commitDetail = execSync(COMMIT_DETAIL).toString().trim();
+  } catch (ex) {
+    console.log(ex);
+  }
 }
-try {
-  currentBranch = execSync(CURRENT_BRANCH).toString().trim();
-} catch (ex) {
-  currentBranch = getArg('currentBranch')
-  // console.log(ex);
+
+if (!currentBranch) {
+  try {
+    currentBranch = execSync(CURRENT_BRANCH).toString().trim();
+  } catch (ex) {
+    console.log(ex);
+  }
 }
+
+// console.log('commitId', commitId)
+// console.log('currentBranch', currentBranch)
+// console.log('commitDetail', commitDetail)
+
 
 function getCurrentTimeWithOffset() {
   const currentDate = new Date();
@@ -115,7 +124,7 @@ function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
       return {
         // 全局变量，可以在整个应用中使用
         define: {
-          __API__: JSON.stringify(API),
+          __API__: JSON.stringify(api),
           // __WS__: JSON.stringify(WS || API.replace('http', 'ws')),
           [injectKey]: gitInfo,
         },
