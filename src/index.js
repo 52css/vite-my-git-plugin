@@ -99,7 +99,6 @@ function getCurrentTimeWithOffset() {
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const gitInfo = JSON.stringify({
     API,
-    WS,
     COMMIT_ID: commitId,
     CURRENT_BRANCH: currentBranch,
     COMMIT_DETAIL: commitDetail.split("\n").map((x) => JSON.stringify(x)),
