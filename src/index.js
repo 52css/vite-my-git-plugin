@@ -62,20 +62,20 @@ const buildTime =
 try {
   commitId = execSync(COMMIT_ID).toString().trim();
 } catch (ex) {
-  commitId = process.env.COMMIT_ID;
+  commitId = process?.env?.COMMIT_ID;
   // console.log(ex);
 }
 
 try {
   commitDetail = execSync(COMMIT_DETAIL).toString().trim();
 } catch (ex) {
-  commitDetail = process.env.COMMIT_DETAIL;
+  commitDetail = process?.env?.COMMIT_DETAIL;
   // console.log(ex);
 }
 try {
   currentBranch = execSync(CURRENT_BRANCH).toString().trim();
 } catch (ex) {
-  currentBranch = process.env.CURRENT_BRANCH;
+  currentBranch = process?.env?.CURRENT_BRANCH;
   // console.log(ex);
 }
 
