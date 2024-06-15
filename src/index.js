@@ -1,26 +1,62 @@
 const ChildProcess = require("child_process");
 const execSync = ChildProcess.execSync;
-const getArg = (str) => {
-  const index = process.argv.findIndex((x) => x === `--${str}`);
+const getCurrentTimeWithOffset = () => {
+  const currentDate = new Date();
 
-  if (index >=0) {
-    return process.argv[index + 1]
+  // 获取当前时区名称
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  // 判断当前时区是否为 UTC
+  if (timeZone === "UTC" || timeZone === "Etc/UTC") {
+    // 当前时区为 UTC，需要添加 8 小时的时差
+    currentDate.setHours(currentDate.getHours() + 8);
   }
-}
 
-let api = getArg('api');
+  return currentDate;
+};
+const getBuildTime = () => {
+  const now = getCurrentTimeWithOffset();
+  const month =
+    now.getMonth() + 1 < 10 ? "0" + (now.getMonth() + 1) : now.getMonth() + 1;
+  const day = now.getDate() < 10 ? "0" + now.getDate() : now.getDate();
+  const ss = now.getSeconds() < 10 ? "0" + now.getSeconds() : now.getSeconds();
+  const mm = now.getMinutes() < 10 ? "0" + now.getMinutes() : now.getMinutes();
+  const hh = now.getHours() < 10 ? "0" + now.getHours() : now.getHours();
+  const buildTime =
+    now.getFullYear() +
+    "-" +
+    month +
+    "-" +
+    day +
+    "\xa0" +
+    hh +
+    ":" +
+    mm +
+    ":" +
+    ss;
 
-if (api) {
-  process.env.API = api;
-}
+  return buildTime;
+};
+const getArgs = () =>
+  process.argv.reduce((args, arg) => {
+    // long arg
+    if (arg.slice(0, 2) === "--") {
+      const longArg = arg.split("=");
+      const longArgFlag = longArg[0].slice(2);
+      const longArgValue = longArg.length > 1 ? longArg[1] : true;
+      args[longArgFlag] = longArgValue;
+    }
+    // flags
+    else if (arg[0] === "-") {
+      const flags = arg.slice(1).split("");
+      flags.forEach((flag) => {
+        args[flag] = true;
+      });
+    }
+    return args;
+  }, {});
+const args = getArgs();
 
-// const wsIndex = process.argv.findIndex((x) => x === "--ws");
-// let WS = "";
-
-// if (wsIndex >= 0) {
-//   WS = process.argv[wsIndex + 1];
-//   process.env.WS = WS;
-// }
 
 const COMMIT_ID = "git rev-parse HEAD";
 const CURRENT_BRANCH = "git name-rev --name-only HEAD";
@@ -29,40 +65,15 @@ const CURRENT_BRANCH = "git name-rev --name-only HEAD";
 // 3. git symbolic-ref HEAD | sed -e "s/^refs\/heads\///"
 const COMMIT_DETAIL = 'git log --pretty=format:"%h - %an, %ar : %s"  -5';
 
-let commitId = getArg('commitId');
-let currentBranch = getArg('currentBranch');
-let commitDetail = getArg('commitDetail');
-const now = getCurrentTimeWithOffset()
-const month =
-  now.getMonth() + 1 < 10
-    ? "0" + (now.getMonth() + 1)
-    : now.getMonth() + 1;
-const day =
-  now.getDate() < 10 ? "0" + now.getDate() : now.getDate();
-const ss =
-  now.getSeconds() < 10
-    ? "0" + now.getSeconds()
-    : now.getSeconds();
-const mm =
-  now.getMinutes() < 10
-    ? "0" + now.getMinutes()
-    : now.getMinutes();
-const hh =
-  now.getHours() < 10
-    ? "0" + now.getHours()
-    : now.getHours();
-const buildTime =
-  now.getFullYear() +
-  "-" +
-  month +
-  "-" +
-  day +
-  "\xa0" +
-  hh +
-  ":" +
-  mm +
-  ":" +
-  ss;
+let api = args.api ?? "";
+let commitId = args.commitId ?? "";
+let currentBranch = args.currentBranch ?? "";
+let commitDetail = args.commitDetail ?? "";
+const buildTime = getBuildTime();
+
+if (api) {
+  process.env.API = api;
+}
 
 if (!commitId) {
   try {
@@ -87,27 +98,6 @@ if (!currentBranch) {
     console.log(ex);
   }
 }
-
-// console.log('commitId', commitId)
-// console.log('currentBranch', currentBranch)
-// console.log('commitDetail', commitDetail)
-
-
-function getCurrentTimeWithOffset() {
-  const currentDate = new Date();
-
-  // 获取当前时区名称
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  // 判断当前时区是否为 UTC
-  if (timeZone === 'UTC' || timeZone === 'Etc/UTC') {
-    // 当前时区为 UTC，需要添加 8 小时的时差
-    currentDate.setHours(currentDate.getHours() + 8);
-  }
-
-  return currentDate;
-}
-
 
 function MyGitPlugin(injectKey = "__MY_GIT_PLUGIN__") {
   const gitInfo = JSON.stringify({
