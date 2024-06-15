@@ -1,4 +1,7 @@
 const ChildProcess = require("child_process");
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+const argv = yargs(hideBin(process.argv)).argv;
 const execSync = ChildProcess.execSync;
 const getCurrentTimeWithOffset = () => {
   const currentDate = new Date();
@@ -37,25 +40,6 @@ const getBuildTime = () => {
 
   return buildTime;
 };
-const getArgs = () =>
-  process.argv.reduce((args, arg) => {
-    // long arg
-    if (arg.slice(0, 2) === "--") {
-      const longArg = arg.split("=");
-      const longArgFlag = longArg[0].slice(2);
-      const longArgValue = longArg.length > 1 ? longArg[1] : true;
-      args[longArgFlag] = longArgValue;
-    }
-    // flags
-    else if (arg[0] === "-") {
-      const flags = arg.slice(1).split("");
-      flags.forEach((flag) => {
-        args[flag] = true;
-      });
-    }
-    return args;
-  }, {});
-const args = getArgs();
 
 
 const COMMIT_ID = "git rev-parse HEAD";
@@ -65,10 +49,10 @@ const CURRENT_BRANCH = "git name-rev --name-only HEAD";
 // 3. git symbolic-ref HEAD | sed -e "s/^refs\/heads\///"
 const COMMIT_DETAIL = 'git log --pretty=format:"%h - %an, %ar : %s"  -5';
 
-let api = args.api ?? "";
-let commitId = args.commitId ?? "";
-let currentBranch = args.currentBranch ?? "";
-let commitDetail = args.commitDetail ?? "";
+let api = argv.api ?? "";
+let commitId = argv.commitId ?? "";
+let currentBranch = argv.currentBranch ?? "";
+let commitDetail = argv.commitDetail ?? "";
 const buildTime = getBuildTime();
 
 if (api) {
