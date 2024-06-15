@@ -1,7 +1,4 @@
 const ChildProcess = require("child_process");
-const yargs = require('yargs/yargs');
-const { hideBin } = require('yargs/helpers');
-const argv = yargs(hideBin(process.argv)).argv;
 const execSync = ChildProcess.execSync;
 const getCurrentTimeWithOffset = () => {
   const currentDate = new Date();
@@ -40,7 +37,31 @@ const getBuildTime = () => {
 
   return buildTime;
 };
-
+const getArgv = () =>
+  process.argv.reduce((args, arg, argIndex) => {
+    // long arg
+    if (arg.slice(0, 2) === "--") {
+      const longArg = arg.split("=");
+      const longArgFlag = longArg[0].slice(2);
+      const nextArg = process.argv[argIndex + 1];
+      const longArgValue =
+        longArg.length > 1
+          ? longArg[1]
+          : nextArg && nextArg[0] !== "-"
+          ? nextArg
+          : true;
+      args[longArgFlag] = longArgValue;
+    }
+    // flags
+    else if (arg[0] === "-") {
+      const flags = arg.slice(1).split("");
+      flags.forEach((flag) => {
+        args[flag] = true;
+      });
+    }
+    return args;
+  }, {});
+const argv = getArgv();
 
 const COMMIT_ID = "git rev-parse HEAD";
 const CURRENT_BRANCH = "git name-rev --name-only HEAD";
